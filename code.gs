@@ -1,6 +1,6 @@
 /**
  * SILAP-BMN / SILAP-KDF - Backend Web API (Code.gs)
- * Version: 2.7 (Enhanced CRUD with Master Row Index & Dual GET/POST Support)
+ * Version: 2.8 (Optimized routing, unified transaction saver, robust error handling)
  */
 
 function doGet(e) {
@@ -34,7 +34,7 @@ function handleRequest(e) {
     }
 
     var action = params.action || payload.action || 'getDatabaseData';
-    var forceRefresh = (params.nocache === '1' || payload.nocache === 1);
+    var forceRefresh = (params.nocache === '1' || payload.nocache === 1 || params.nocache === 'true');
     var result;
 
     switch (action) {
@@ -42,7 +42,8 @@ function handleRequest(e) {
         result = getDatabaseData(forceRefresh);
         break;
       case 'addTransaksiKeluar':
-        result = addTransaksiKeluar(payload);
+      case 'saveTransaksi':
+        result = saveTransaksi(payload);
         break;
       case 'updateTransaksi':
         result = updateTransaksi(payload);
@@ -67,7 +68,7 @@ function handleRequest(e) {
 
 function getActiveSheet() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  return ss.getSheetByName('DATA_BMN') || ss.getSheets()[0];
+  return ss.getSheetByName('DATA_BMN') || ss.getSheetByName('MasterData') || ss.getSheets()[0];
 }
 
 function formatRupiah(number) {
@@ -95,7 +96,7 @@ function fixDriveUrl(url) {
 function getDatabaseData(forceRefresh) {
   try {
     var cache = CacheService.getScriptCache();
-    var cacheKey = 'SILAP_BMN_DB_DATA_V4';
+    var cacheKey = 'SILAP_BMN_DB_DATA_V5';
 
     if (forceRefresh) {
       cache.remove(cacheKey);
@@ -138,7 +139,6 @@ function getDatabaseData(forceRefresh) {
 
       var currentItem = null;
 
-      // Jika baris berisi data Master baru (Nama Barang / NUP / Nopol terisi)
       if (namaBarang !== "" || nup !== "" || nopol !== "") {
         var itemId = "ITEM_" + (nup || ('IDX_' + i)) + "_" + nopol.replace(/\s+/g, '');
         
@@ -179,11 +179,9 @@ function getDatabaseData(forceRefresh) {
           lastMasterItem = currentItem;
         }
       } else {
-        // Jika kolom master kosong, hubungkan ke master item terakhir yang aktif
         currentItem = lastMasterItem;
       }
 
-      // Olah Kolom Transaksi (O-Z: Kolom Index 14 s/d 25)
       if (currentItem) {
         var tglKeluar = row[14] ? formatDate(row[14]) : '';
         var tglMasuk = row[20] ? formatDate(row[20]) : '';
@@ -212,7 +210,7 @@ function getDatabaseData(forceRefresh) {
     }
 
     var result = { success: true, items: itemsList };
-    cache.put(cacheKey, JSON.stringify(result), 300); // Cache 5 Menit
+    cache.put(cacheKey, JSON.stringify(result), 300);
     return result;
 
   } catch (e) {
@@ -220,66 +218,13 @@ function getDatabaseData(forceRefresh) {
   }
 }
 
-function addTransaksiKeluar(payload) {
+function saveTransaksi(payload) {
   try {
+    var rowIndex = payload.rowIndex ? parseInt(payload.rowIndex) : null;
     var sheet = getActiveSheet();
     var lastRow = sheet.getLastRow();
-    if (lastRow < 2) {
-      return { success: false, error: "Data sheet kosong." };
-    }
 
-    var targetMasterIndex = -1;
-    if (payload.masterRowIndex && !isNaN(parseInt(payload.masterRowIndex))) {
-      targetMasterIndex = parseInt(payload.masterRowIndex);
-    }
-
-    if (targetMasterIndex === -1) {
-      var data = sheet.getRange(2, 1, lastRow - 1, 14).getValues();
-      var targetNup = String(payload.nup || '').trim().toLowerCase();
-      var targetNopol = String(payload.nopol || '').trim().toLowerCase();
-
-      for (var i = 0; i < data.length; i++) {
-        var rowNup = String(data[i][3] || '').trim().toLowerCase();
-        var rowNopol = String(data[i][11] || '').trim().toLowerCase();
-        
-        if ((targetNup !== '' && targetNup !== '-' && rowNup === targetNup) || 
-            (targetNopol !== '' && targetNopol !== '-' && rowNopol === targetNopol)) {
-          targetMasterIndex = i + 2;
-          break;
-        }
-      }
-    }
-
-    if (targetMasterIndex === -1 || targetMasterIndex > lastRow + 1) {
-      return { success: false, error: "Master data barang tidak ditemukan di Spreadsheet." };
-    }
-
-    // Periksa apakah baris master kolom O-Z (trx) masih kosong
-    var masterTrxValues = sheet.getRange(targetMasterIndex, 15, 1, 12).getValues()[0];
-    var isMasterTrxEmpty = masterTrxValues.every(function(val) { return val === "" || val === null; });
-
-    var targetRowNumber;
-    if (isMasterTrxEmpty) {
-      targetRowNumber = targetMasterIndex;
-    } else {
-      var dataFull = sheet.getRange(2, 1, Math.max(lastRow - 1, 1), 12).getValues();
-      var insertRowIndex = targetMasterIndex;
-
-      for (var j = targetMasterIndex - 1; j < dataFull.length; j++) {
-        var hasMasterInfo = (String(dataFull[j][4] || '').trim() !== '' || 
-                             String(dataFull[j][3] || '').trim() !== '' || 
-                             String(dataFull[j][11] || '').trim() !== '');
-        if (hasMasterInfo && (j + 2 !== targetMasterIndex)) {
-          break;
-        }
-        insertRowIndex = j + 2;
-      }
-
-      sheet.insertRowAfter(insertRowIndex);
-      targetRowNumber = insertRowIndex + 1;
-    }
-
-    var trxValues = [[
+    var trxValues = [
       payload.keluarTgl || '',
       payload.keluarPetugasSerah || '',
       payload.keluarPetugasTerima || '',
@@ -292,11 +237,69 @@ function addTransaksiKeluar(payload) {
       payload.masukBA || '',
       payload.masukFoto || '',
       payload.masukLokasi || ''
-    ]];
+    ];
 
-    sheet.getRange(targetRowNumber, 15, 1, 12).setValues(trxValues);
-    CacheService.getScriptCache().remove('SILAP_BMN_DB_DATA_V4');
-    return { success: true, message: "Transaksi riwayat berhasil ditambahkan!" };
+    if (rowIndex && rowIndex >= 2) {
+      // Update existing row
+      sheet.getRange(rowIndex, 15, 1, 12).setValues([trxValues]);
+    } else {
+      // Find master row index to attach or insert
+      var targetMasterIndex = -1;
+      if (payload.masterRowIndex && !isNaN(parseInt(payload.masterRowIndex))) {
+        targetMasterIndex = parseInt(payload.masterRowIndex);
+      }
+
+      if (targetMasterIndex === -1 && lastRow >= 2) {
+        var data = sheet.getRange(2, 1, lastRow - 1, 14).getValues();
+        var targetNup = String(payload.nup || '').trim().toLowerCase();
+        var targetNopol = String(payload.nopol || '').trim().toLowerCase();
+
+        for (var i = 0; i < data.length; i++) {
+          var rowNup = String(data[i][3] || '').trim().toLowerCase();
+          var rowNopol = String(data[i][11] || '').trim().toLowerCase();
+          
+          if ((targetNup !== '' && targetNup !== '-' && rowNup === targetNup) || 
+              (targetNopol !== '' && targetNopol !== '-' && rowNopol === targetNopol)) {
+            targetMasterIndex = i + 2;
+            break;
+          }
+        }
+      }
+
+      if (targetMasterIndex === -1) {
+        return { success: false, error: "Master data barang tidak ditemukan di Spreadsheet." };
+      }
+
+      // Check if master row's transaction columns (O-Z) are empty
+      var masterTrxValues = sheet.getRange(targetMasterIndex, 15, 1, 12).getValues()[0];
+      var isMasterTrxEmpty = masterTrxValues.every(function(val) { return val === "" || val === null; });
+
+      var targetRowNumber;
+      if (isMasterTrxEmpty) {
+        targetRowNumber = targetMasterIndex;
+      } else {
+        var dataFull = sheet.getRange(2, 1, Math.max(lastRow - 1, 1), 12).getValues();
+        var insertRowIndex = targetMasterIndex;
+
+        for (var j = targetMasterIndex - 1; j < dataFull.length; j++) {
+          var hasMasterInfo = (String(dataFull[j][4] || '').trim() !== '' || 
+                               String(dataFull[j][3] || '').trim() !== '' || 
+                               String(dataFull[j][11] || '').trim() !== '');
+          if (hasMasterInfo && (j + 2 !== targetMasterIndex)) {
+            break;
+          }
+          insertRowIndex = j + 2;
+        }
+
+        sheet.insertRowAfter(insertRowIndex);
+        targetRowNumber = insertRowIndex + 1;
+      }
+
+      sheet.getRange(targetRowNumber, 15, 1, 12).setValues([trxValues]);
+    }
+
+    CacheService.getScriptCache().remove('SILAP_BMN_DB_DATA_V5');
+    return { success: true, message: "Transaksi berhasil disimpan!" };
 
   } catch (err) {
     return { success: false, error: err.toString() };
@@ -304,35 +307,7 @@ function addTransaksiKeluar(payload) {
 }
 
 function updateTransaksi(payload) {
-  try {
-    var rowIndex = parseInt(payload.rowIndex);
-    if (!rowIndex || rowIndex < 2) {
-      return { success: false, error: "Index baris transaksi tidak valid." };
-    }
-
-    var sheet = getActiveSheet();
-    var trxValues = [[
-      payload.keluarTgl || '',
-      payload.keluarPetugasSerah || '',
-      payload.keluarPetugasTerima || '',
-      payload.keluarBA || '',
-      payload.keluarFoto || '',
-      payload.keluarLokasi || '',
-      payload.masukTgl || '',
-      payload.masukPetugasTerima || '',
-      payload.masukPetugasSerah || '',
-      payload.masukBA || '',
-      payload.masukFoto || '',
-      payload.masukLokasi || ''
-    ]];
-
-    sheet.getRange(rowIndex, 15, 1, 12).setValues(trxValues);
-    CacheService.getScriptCache().remove('SILAP_BMN_DB_DATA_V4');
-
-    return { success: true, message: "Transaksi berhasil diperbarui!" };
-  } catch (err) {
-    return { success: false, error: err.toString() };
-  }
+  return saveTransaksi(payload);
 }
 
 function deleteTransaksi(payload) {
@@ -344,7 +319,7 @@ function deleteTransaksi(payload) {
 
     var sheet = getActiveSheet();
     sheet.getRange(rowIndex, 15, 1, 12).clearContent();
-    CacheService.getScriptCache().remove('SILAP_BMN_DB_DATA_V4');
+    CacheService.getScriptCache().remove('SILAP_BMN_DB_DATA_V5');
 
     return { success: true, message: "Transaksi riwayat berhasil dihapus." };
   } catch (err) {
