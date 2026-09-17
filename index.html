@@ -2,27 +2,16 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
-  /* ELIMINASI KOTAK DAN MARGIN TEMA BLOGGER */
   html, body {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    overflow-x: hidden !important;
+    overflow: hidden !important;
     background-color: #f8fafc !important;
   }
 
-  /* Hilangkan kotak, border, outline, dan padding bawaan elemen pembungkus Blogger */
-  .post, .post-outer, .post-body, .entry-content, .widget, .Blog, .main-inner, .column-main-inner {
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    background: transparent !important;
-  }
-
-  /* Sembunyikan semua elemen struktur tema luar */
+  /* Hide Blogger elements automatically */
   #header, #footer, .header-outer, .footer-outer, .sidebar-container, .sidebar, aside,
   .post-header, .post-footer, .post-title, .entry-title, .comments,
   #blog-pager, .blog-pager, .breadcrumbs, .widget-title, .feed-links,
@@ -30,7 +19,12 @@
     display: none !important;
   }
 
-  /* ISOLATION CONTAINER: Tampilan Aplikasi Utama */
+  :root {
+    --primary-color: #1e3a8a;
+    --secondary-color: #0d9488;
+    --bg-light: #f8fafc;
+  }
+
   #silapAppContainer {
     position: fixed !important;
     top: 0 !important;
@@ -41,8 +35,10 @@
     height: 100vh !important;
     z-index: 2147483640 !important;
     overflow-y: auto !important;
-    background-color: #f8fafc !important;
-    padding: 20px !important;
+    background-color: var(--bg-light) !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #334155;
+    padding: 20px 0;
     box-sizing: border-box !important;
   }
 
@@ -54,7 +50,7 @@
   }
 
   .nav-pills .nav-link.active {
-    background-color: #1e3a8a;
+    background-color: var(--primary-color);
     color: white;
   }
 
@@ -62,17 +58,22 @@
     background: white;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   }
 
   .table-custom th {
     background-color: #0f172a;
     color: white;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
     vertical-align: middle;
-    padding: 12px 10px;
+  }
+
+  .badge-kondisi {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+    border-radius: 20px;
   }
 
   .img-thumb {
@@ -80,15 +81,15 @@
     height: 40px;
     object-fit: cover;
     border-radius: 6px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid #e2e8f0;
   }
 
   .detail-card {
     background: white;
     border-radius: 12px;
     padding: 24px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
   }
 
   .img-preview-lg {
@@ -99,81 +100,133 @@
     border: 1px solid #cbd5e1;
   }
 
-  .trx-keluar-header { background-color: #fff7ed; color: #9a3412; font-weight: bold; border-bottom: 2px solid #fdba74 !important; }
-  .trx-masuk-header { background-color: #f0fdf4; color: #166534; font-weight: bold; border-bottom: 2px solid #86efac !important; }
+  .trx-keluar-header { background-color: #fff7ed; color: #9a3412; font-weight: bold; }
+  .trx-masuk-header { background-color: #f0fdf4; color: #166534; font-weight: bold; }
 
-  .modal { z-index: 2147483647 !important; background: rgba(15, 23, 42, 0.6); }
-  .modal-dialog { z-index: 2147483648 !important; }
+  /* FIX MODAL Z-INDEX & BACKDROP FOR BLOGGER EMBED */
+  .modal {
+    z-index: 2147483647 !important;
+    background: rgba(15, 23, 42, 0.75) !important;
+    backdrop-filter: blur(3px);
+  }
 
-  .spin-anim { animation: spin 1s linear infinite; }
+  .modal-backdrop {
+    display: none !important; /* Hide default body backdrop to prevent click blocking */
+  }
+
+  .modal-dialog {
+    z-index: 2147483648 !important;
+    margin-top: 50px;
+  }
+
+  .modal-content {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border-radius: 12px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+    overflow: hidden;
+  }
+
+  /* FORCED INPUT EDITABILITY & STYLING */
+  .modal .form-control, .modal .form-select {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    cursor: text !important;
+    font-size: 0.875rem !important;
+  }
+
+  .modal .form-control:focus, .modal .form-select:focus {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25) !important;
+  }
+
+  .spin-anim {
+    animation: spin 1s linear infinite;
+  }
   @keyframes spin { 100% { transform: rotate(360deg); } }
 
-  /* TAMPILAN PRINT A4 LANDSCAPE */
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+
   @media print {
-    @page { size: A4 landscape; margin: 8mm; }
-    html, body { background: white !important; height: auto !important; overflow: visible !important; }
-    .no-print, .btn, .input-group, select, input, #syncStatusBadge, #loadingSpinner, .nav-pills { display: none !important; }
-    #silapAppContainer { position: relative !important; width: 100% !important; height: auto !important; padding: 0 !important; overflow: visible !important; }
-    .detail-card { box-shadow: none !important; border: none !important; padding: 0 !important; }
-    table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; margin-top: 10px !important; }
-    th, td { border: 1px solid #000 !important; padding: 4px !important; color: #000 !important; }
-    .trx-keluar-header, .trx-masuk-header { background-color: #f1f5f9 !important; color: #000 !important; }
+    .no-print, .btn, .input-group, select, input, #syncStatusBadge, #loadingSpinner { display: none !important; }
+    #silapAppContainer { position: static !important; width: 100% !important; background: #fff !important; }
+    table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; }
+    th, td { border: 1px solid #000 !important; padding: 4px !important; }
   }
 </style>
 
 <div id="silapAppContainer">
-  <div class="container-fluid px-2">
+  <div class="container-fluid px-4">
 
-    <!-- Header Navigation -->
-    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom no-print">
+    <!-- Header Navigation Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom no-print">
       <div class="d-flex align-items-center gap-2">
         <i class="bi bi-truck fs-3 text-primary"></i>
         <div>
-          <h4 class="fw-bold mb-0 text-dark">SILAP-KDF BMN TD <small class="fs-6 text-muted fw-normal">| Management & Monitoring</small></h4>
+          <h4 class="fw-bold mb-0">SILAP-KDF BMN TD <small class="fs-6 text-muted fw-normal">| Monitoring Aset & CRUD Riwayat</small></h4>
           <span id="syncStatusBadge" class="badge bg-secondary">Memeriksa Cache...</span>
         </div>
       </div>
-      <button class="btn btn-primary btn-sm shadow-sm" onclick="fetchDatabaseData(true)">
+      <button class="btn btn-primary btn-sm" onclick="fetchDatabaseData(true)">
         <i class="bi bi-arrow-clockwise me-1" id="refreshIcon"></i> Refresh Data
       </button>
     </div>
 
-    <!-- State Loading -->
+    <!-- Loading Spinner & Error Retry Box -->
     <div id="loadingSpinner" class="text-center py-5">
       <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
-      <p id="loadingText" class="mt-3 text-muted fw-semibold">Memuat Data dari Backend Apps Script...</p>
-      <div id="errorRetryBox" style="display: none;" class="mt-4 mx-auto text-start" style="max-width: 600px;">
+      <p id="loadingText" class="mt-3 text-muted fw-semibold">Memuat Data dari Web API Apps Script...</p>
+
+      <div id="errorRetryBox" style="display: none;" class="mt-4 mx-auto text-start" style="max-width: 650px;">
         <div class="alert alert-danger shadow-sm border-0 p-4">
-          <h5 class="fw-bold text-danger mb-2"><i class="bi bi-exclamation-octagon-fill me-2"></i>Koneksi Gagal</h5>
+          <h5 class="fw-bold text-danger mb-2"><i class="bi bi-exclamation-octagon-fill me-2"></i>Koneksi Backend Gagal</h5>
           <hr>
           <div id="errorMessage" class="mb-3 small"></div>
-          <button class="btn btn-primary btn-sm" onclick="fetchDatabaseData(true)"><i class="bi bi-arrow-repeat me-1"></i> Coba Lagi</button>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-primary btn-sm" onclick="fetchDatabaseData(true)">
+              <i class="bi bi-arrow-repeat me-1"></i> Coba Lagi
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Tampilan Konten Utama -->
+    <!-- Main Content Area -->
     <div id="mainContent" style="display: none;">
-      <ul class="nav nav-pills mb-3 no-print" id="pills-tab" role="tablist">
-        <li class="nav-item">
+
+      <!-- Nav Tabs -->
+      <ul class="nav nav-pills mb-4 no-print" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
           <button class="nav-link active" id="tab-rekap-tab" data-bs-toggle="pill" data-bs-target="#tab-rekap" type="button" role="tab">
-            <i class="bi bi-table me-2"></i>Rekap Keseluruhan
+            <i class="bi bi-table me-2"></i>Laporan Rekap Keseluruhan
           </button>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab-detail-tab" data-bs-toggle="pill" data-bs-target="#tab-detail" type="button" role="tab">
-            <i class="bi bi-journal-text me-2"></i>Detail Per Barang
+            <i class="bi bi-journal-text me-2"></i>Laporan Per Barang / Mobil
           </button>
         </li>
       </ul>
 
       <div class="tab-content" id="pills-tabContent">
-        <!-- TAB REKAP -->
+
+        <!-- TAB 1: REKAP KESELURUHAN -->
         <div class="tab-pane fade show active" id="tab-rekap" role="tabpanel">
           <div class="card border-0 shadow-sm p-3 mb-3 no-print">
             <div class="row g-2">
               <div class="col-md-6">
-                <input type="text" id="searchInput" class="form-control" placeholder="Cari Nopol, Nama Barang, NUP, Merk..." onkeyup="filterRekapTable()">
+                <div class="input-group">
+                  <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                  <input type="text" id="searchInput" class="form-control" placeholder="Cari Nopol, Nama Barang, NUP, Merk..." onkeyup="filterRekapTable()">
+                </div>
               </div>
               <div class="col-md-3">
                 <select id="filterKondisi" class="form-select" onchange="filterRekapTable()">
@@ -184,7 +237,9 @@
                 </select>
               </div>
               <div class="col-md-3 text-end">
-                <button class="btn btn-success w-100 fw-semibold" onclick="window.print()"><i class="bi bi-printer me-1"></i> Cetak Rekap A4</button>
+                <button class="btn btn-success w-100" onclick="window.print()">
+                  <i class="bi bi-printer me-1"></i> Cetak Laporan
+                </button>
               </div>
             </div>
           </div>
@@ -194,73 +249,127 @@
               <thead>
                 <tr>
                   <th class="text-center">No</th>
-                  <th class="text-center">Foto</th>
+                  <th>Foto</th>
                   <th>Nama Barang / Kendaraan</th>
                   <th>NUP / Nopol</th>
                   <th>Merk / Tipe</th>
                   <th>Kondisi</th>
                   <th>Nilai Perolehan</th>
-                  <th class="text-center">Jml Trx</th>
+                  <th class="text-center">Jml Transaksi</th>
                   <th class="text-center no-print">Aksi</th>
                 </tr>
               </thead>
-              <tbody id="rekapTableBody"></tbody>
+              <tbody id="rekapTableBody">
+                <!-- Dynamic Content -->
+              </tbody>
             </table>
           </div>
         </div>
 
-        <!-- TAB DETAIL -->
+        <!-- TAB 2: DETAIL PER BARANG -->
         <div class="tab-pane fade" id="tab-detail" role="tabpanel">
-          <div class="card border-0 shadow-sm p-3 mb-3 no-print">
+          <div class="card border-0 shadow-sm p-3 mb-4 no-print">
             <label class="form-label fw-bold text-dark"><i class="bi bi-funnel me-1"></i> Pilih Barang / Kendaraan:</label>
-            <select id="selectBarang" class="form-select form-select-lg" onchange="renderDetailBarang(this.value)"></select>
+            <select id="selectBarang" class="form-select form-select-lg" onchange="renderDetailBarang(this.value)">
+              <!-- Dynamic Content -->
+            </select>
           </div>
-          <div id="detailContainer"></div>
+
+          <div id="detailContainer">
+            <!-- Dynamic Content -->
+          </div>
         </div>
+
       </div>
+
     </div>
 
-    <!-- Modal Form -->
-    <div class="modal fade" id="modalTrxForm" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <!-- Modal Form Transaksi -->
+    <div class="modal fade" id="modalTrxForm" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
       <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
+        <div class="modal-content">
           <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title fw-bold" id="modalTrxTitle"><i class="bi bi-pencil-square me-2"></i> Form Transaksi</h5>
-            <button type="button" class="btn-close btn-close-white" onclick="closeModalDirectly()"></button>
+            <h5 class="modal-title fw-bold" id="modalTrxTitle"><i class="bi bi-pencil-square me-2"></i> Form Transaksi Riwayat</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="closeModalDirectly()" aria-label="Close"></button>
           </div>
           <div class="modal-body p-4">
-            <form id="trxForm">
+            <div id="formAlertBox" class="alert alert-danger py-2 px-3 small mb-3" style="display: none;"></div>
+
+            <form id="trxForm" onsubmit="return false;">
               <input type="hidden" id="formRowIndex" value="">
               <input type="hidden" id="formMasterRowIndex" value="">
+              <input type="hidden" id="formItemNup" value="">
+              <input type="hidden" id="formItemNopol" value="">
 
+              <!-- SEKSI KELUAR -->
               <div class="p-3 bg-light rounded border mb-3">
                 <h6 class="fw-bold text-danger mb-3"><i class="bi bi-box-arrow-up-right me-1"></i> DATA BARANG KELUAR (PEMINJAMAN)</h6>
                 <div class="row g-3">
-                  <div class="col-md-4"><label class="form-label small fw-semibold">Tanggal Keluar</label><input type="date" id="formKeluarTgl" class="form-control"></div>
-                  <div class="col-md-4"><label class="form-label small fw-semibold">Petugas Serah</label><input type="text" id="formKeluarPetugasSerah" class="form-control"></div>
-                  <div class="col-md-4"><label class="form-label small fw-semibold">Penerima (Peminjam)</label><input type="text" id="formKeluarPetugasTerima" class="form-control"></div>
-                  <div class="col-md-4"><label class="form-label small fw-semibold">No. BA / Jenis</label><input type="text" id="formKeluarBA" class="form-control"></div>
-                  <div class="col-md-4"><label class="form-label small fw-semibold">URL Foto Kegiatan</label><input type="text" id="formKeluarFoto" class="form-control"></div>
-                  <div class="col-md-4"><label class="form-label small fw-semibold">Lokasi Pinjam</label><input type="text" id="formKeluarLokasi" class="form-control"></div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Tanggal Keluar</label>
+                    <input type="date" id="formKeluarTgl" class="form-control">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Petugas Serah</label>
+                    <input type="text" id="formKeluarPetugasSerah" class="form-control" placeholder="Petugas Penyerah">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Petugas Terima (Peminjam)</label>
+                    <input type="text" id="formKeluarPetugasTerima" class="form-control" placeholder="Penerima / Peminjam">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">No. BA / Jenis</label>
+                    <input type="text" id="formKeluarBA" class="form-control" placeholder="No Berita Acara">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">URL Foto Kegiatan</label>
+                    <input type="text" id="formKeluarFoto" class="form-control" placeholder="URL Google Drive / Image">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Lokasi Pinjam</label>
+                    <input type="text" id="formKeluarLokasi" class="form-control" placeholder="Lokasi Tujuan">
+                  </div>
                 </div>
               </div>
 
+              <!-- SEKSI MASUK -->
               <div class="p-3 bg-light rounded border">
                 <h6 class="fw-bold text-success mb-3"><i class="bi bi-box-arrow-in-down-left me-1"></i> DATA BARANG MASUK (PENGEMBALIAN)</h6>
                 <div class="row g-3">
-                  <div class="col-md-4"><label class="form-label small fw-semibold">Tanggal Masuk</label><input type="date" id="formMasukTgl" class="form-control"></div>
-                  <div class="col-md-4"><label class="form-label small fw-semibold">Petugas Terima</label><input type="text" id="formMasukPetugasTerima" class="form-control"></div>
-                  <div class="col-md-4"><label class="form-label small fw-semibold">Petugas Serah</label><input type="text" id="formMasukPetugasSerah" class="form-control"></div>
-                  <div class="col-md-4"><label class="form-label small fw-semibold">No. BA / Jenis</label><input type="text" id="formMasukBA" class="form-control"></div>
-                  <div class="col-md-4"><label class="form-label small fw-semibold">URL Foto Kegiatan</label><input type="text" id="formMasukFoto" class="form-control"></div>
-                  <div class="col-md-4"><label class="form-label small fw-semibold">Lokasi Kembali</label><input type="text" id="formMasukLokasi" class="form-control"></div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Tanggal Masuk</label>
+                    <input type="date" id="formMasukTgl" class="form-control">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Petugas Terima</label>
+                    <input type="text" id="formMasukPetugasTerima" class="form-control" placeholder="Petugas Penerima">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Petugas Serah</label>
+                    <input type="text" id="formMasukPetugasSerah" class="form-control" placeholder="Pengembali">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">No. BA / Jenis</label>
+                    <input type="text" id="formMasukBA" class="form-control" placeholder="No Berita Acara">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">URL Foto Kegiatan</label>
+                    <input type="text" id="formMasukFoto" class="form-control" placeholder="URL Google Drive / Image">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Lokasi Kembali</label>
+                    <input type="text" id="formMasukLokasi" class="form-control" placeholder="Lokasi Penyerahan">
+                  </div>
                 </div>
               </div>
+
             </form>
           </div>
           <div class="modal-footer bg-light">
-            <button type="button" class="btn btn-secondary btn-sm" onclick="closeModalDirectly()">Batal</button>
-            <button type="button" class="btn btn-primary btn-sm" onclick="submitTrxForm()" id="btnSubmitForm"><i class="bi bi-save me-1"></i> Simpan Transaksi</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" onclick="closeModalDirectly()">Batal</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="submitTrxForm()" id="btnSubmitForm">
+              <i class="bi bi-save me-1"></i> Simpan Transaksi
+            </button>
           </div>
         </div>
       </div>
@@ -272,18 +381,68 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxPrrD7ARUpo6GR7C16TjpVtks_GEA3f0ocY81eKSaLPVsiWHyh13B2SkoTgwpEZR7Svw/exec";
-  const CACHE_KEY = "SILAP_FRONTEND_CACHE_DATA_V3";
+  // Ganti URL di bawah dengan Web App URL hasil Deploy Google Apps Script Anda (wajib /exec)
+  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyIBjFyL0FUww-DKTlUwTylndRMC6Jsx4SVwBWpmCzat9dqLWmu8sheqTaDL3LTvbJwXA/exec";
+  const CACHE_KEY = "SILAP_FRONTEND_CACHE_DATA";
+
   let globalData = [];
 
+  function showToastNotice(message, isError = false) {
+    const syncBadge = document.getElementById('syncStatusBadge');
+    if (syncBadge) {
+      syncBadge.className = isError ? 'badge bg-danger text-white' : 'badge bg-success text-white';
+      syncBadge.innerHTML = message;
+      setTimeout(() => {
+        syncBadge.className = 'badge bg-success';
+        syncBadge.innerHTML = '<i class="bi bi-cloud-check me-1"></i> Data Terkini';
+      }, 4000);
+    }
+  }
+
+  function formatDateForInput(dateStr) {
+    if (!dateStr || dateStr === '-') return '';
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().split('T')[0];
+    }
+    return dateStr;
+  }
+
+  function getModalInstance() {
+    const modalEl = document.getElementById('modalTrxForm');
+    if (!modalEl) return null;
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+      return bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+    }
+    return null;
+  }
+
+  function removeStrayBackdrops() {
+    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+  }
+
+  function closeModalDirectly() {
+    const modalInstance = getModalInstance();
+    if (modalInstance) {
+      modalInstance.hide();
+    }
+    const modalEl = document.getElementById('modalTrxForm');
+    if (modalEl) {
+      modalEl.classList.remove('show');
+      modalEl.style.display = 'none';
+    }
+    removeStrayBackdrops();
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
-    // Pindahkan aplikasi langsung ke document.body untuk melepas konteks CSS Blogger
     const appEl = document.getElementById('silapAppContainer');
-    if (appEl) {
+    if (appEl && appEl.parentElement !== document.body) {
       document.body.appendChild(appEl);
     }
     
-    // Baca Cache Lokal
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+
     const cachedData = localStorage.getItem(CACHE_KEY);
     if (cachedData) {
       try {
@@ -292,14 +451,16 @@
           globalData = parsed;
           renderRekapTable(globalData);
           renderBarangSelector(globalData);
+          
           document.getElementById('loadingSpinner').style.display = 'none';
           document.getElementById('mainContent').style.display = 'block';
-          updateSyncBadge('bg-info text-dark', '<i class="bi bi-check-circle me-1"></i> Cache Aktif');
+          updateSyncBadge('bg-info text-dark', '<i class="bi bi-check-circle me-1"></i> Menggunakan Cache');
         }
       } catch (e) {
-        console.warn("Gagal membaca cache lokal.", e);
+        console.warn("Gagal membaca cache lokal", e);
       }
     }
+
     fetchDatabaseData(false);
   });
 
@@ -310,7 +471,7 @@
     const refreshIcon = document.getElementById('refreshIcon');
 
     if (refreshIcon) refreshIcon.classList.add('spin-anim');
-    updateSyncBadge('bg-warning text-dark', '<i class="bi bi-arrow-repeat me-1"></i> Synchronizing...');
+    updateSyncBadge('bg-warning text-dark', '<i class="bi bi-arrow-repeat me-1"></i> Memperbarui Data...');
 
     if (globalData.length === 0) {
       loadingSpinner.style.display = 'block';
@@ -325,10 +486,10 @@
         : `${GAS_WEB_APP_URL}?action=getDatabaseData&_t=${timestamp}`;
       
       const response = await fetch(url, { cache: 'no-store' });
-      if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
+      if (!response.ok) throw new Error(`HTTP Error! Status: ${response.status}`);
 
       const res = await response.json();
-      if (!res.success) throw new Error(res.error || 'Terjadi kesalahan pada server backend.');
+      if (!res.success) throw new Error(res.error || 'Terjadi kesalahan backend.');
 
       globalData = res.items || [];
       localStorage.setItem(CACHE_KEY, JSON.stringify(globalData));
@@ -338,18 +499,18 @@
 
       loadingSpinner.style.display = 'none';
       mainContent.style.display = 'block';
-      updateSyncBadge('bg-success', '<i class="bi bi-cloud-check me-1"></i> Terhubung');
+      updateSyncBadge('bg-success', '<i class="bi bi-cloud-check me-1"></i> Data Terkini');
 
     } catch (err) {
       console.error("Fetch Error:", err);
       if (globalData.length > 0) {
-        updateSyncBadge('bg-secondary', '<i class="bi bi-wifi-off me-1"></i> Offline Mode');
+        updateSyncBadge('bg-secondary', '<i class="bi bi-wifi-off me-1"></i> Mode Offline');
       } else {
         loadingSpinner.style.display = 'block';
         mainContent.style.display = 'none';
         errorRetryBox.style.display = 'block';
         document.getElementById('errorMessage').innerHTML = `<code>${err.message || err}</code>`;
-        updateSyncBadge('bg-danger', '<i class="bi bi-x-circle me-1"></i> Gagal Memuat');
+        updateSyncBadge('bg-danger', '<i class="bi bi-x-circle me-1"></i> Gagal Sinkron');
       }
     } finally {
       if (refreshIcon) refreshIcon.classList.remove('spin-anim');
@@ -369,19 +530,19 @@
     tbody.innerHTML = '';
 
     if (!items || items.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted">Data tidak ditemukan.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada data ditemukan.</td></tr>';
       return;
     }
 
     items.forEach((item, index) => {
       const fotoHtml = item.foto 
-        ? `<img src="${item.foto}" class="img-thumb" alt="Foto">` 
+        ? `<img src="${item.foto}" class="img-thumb" alt="Foto">`
         : `<span class="badge bg-secondary">No Image</span>`;
 
       let badgeKondisi = 'bg-success';
-      const kLower = (item.kondisi || '').toLowerCase();
-      if (kLower.includes('rr') || kLower.includes('rusak ringan')) badgeKondisi = 'bg-warning text-dark';
-      if (kLower.includes('rb') || kLower.includes('rusak berat')) badgeKondisi = 'bg-danger';
+      const kondisiLower = (item.kondisi || '').toLowerCase();
+      if (kondisiLower.includes('rr') || kondisiLower.includes('rusak ringan')) badgeKondisi = 'bg-warning text-dark';
+      if (kondisiLower.includes('rb') || kondisiLower.includes('rusak berat')) badgeKondisi = 'bg-danger';
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -396,12 +557,12 @@
           <small class="text-muted">NUP: ${item.nup}</small>
         </td>
         <td>${item.merk} / ${item.tipe} (${item.tahun})</td>
-        <td><span class="badge ${badgeKondisi}">${item.kondisi}</span></td>
-        <td class="fw-bold text-dark">${item.nilaiPerolehanFormatted}</td>
+        <td><span class="badge badge-kondisi ${badgeKondisi}">${item.kondisi}</span></td>
+        <td>${item.nilaiPerolehanFormatted}</td>
         <td class="text-center"><span class="badge bg-info text-dark fw-bold">${(item.history || []).length} Trx</span></td>
         <td class="text-center no-print">
           <button class="btn btn-sm btn-outline-primary" onclick="viewDetail('${item.id}')">
-            <i class="bi bi-eye me-1"></i> Detail
+            <i class="bi bi-eye"></i> Detail
           </button>
         </td>
       `;
@@ -450,11 +611,8 @@
     document.getElementById('selectBarang').value = itemId;
     renderDetailBarang(itemId);
 
-    const detailTabBtn = document.getElementById('tab-detail-tab');
-    if (detailTabBtn) {
-      const tab = new bootstrap.Tab(detailTabBtn);
-      tab.show();
-    }
+    const detailTab = new bootstrap.Tab(document.getElementById('tab-detail-tab'));
+    detailTab.show();
   }
 
   function renderDetailBarang(itemId) {
@@ -468,11 +626,11 @@
 
     let historyRows = '';
     if (!item.history || item.history.length === 0) {
-      historyRows = '<tr><td colspan="14" class="text-center py-4 text-muted">Belum ada riwayat transaksi.</td></tr>';
+      historyRows = '<tr><td colspan="14" class="text-center py-4 text-muted">Belum ada riwayat peminjaman / pengembalian.</td></tr>';
     } else {
       item.history.forEach((h) => {
-        const imgKeluar = h.keluarFoto ? `<a href="${h.keluarFoto}" target="_blank" class="btn btn-xs btn-outline-secondary"><i class="bi bi-image"></i></a>` : '-';
-        const imgMasuk = h.masukFoto ? `<a href="${h.masukFoto}" target="_blank" class="btn btn-xs btn-outline-secondary"><i class="bi bi-image"></i></a>` : '-';
+        const imgKeluar = h.keluarFoto ? `<a href="${h.keluarFoto}" target="_blank" class="btn btn-xs btn-outline-secondary"><i class="bi bi-image"></i> Lihat</a>` : '-';
+        const imgMasuk = h.masukFoto ? `<a href="${h.masukFoto}" target="_blank" class="btn btn-xs btn-outline-secondary"><i class="bi bi-image"></i> Lihat</a>` : '-';
 
         historyRows += `
           <tr>
@@ -491,8 +649,12 @@
             <td>${h.masukLokasi}</td>
             <td class="text-center no-print">
               <div class="btn-group btn-group-sm">
-                <button type="button" class="btn btn-outline-primary" onclick="openEditModal('${item.id}', ${h.rowIndex})"><i class="bi bi-pencil"></i></button>
-                <button type="button" class="btn btn-outline-danger" onclick="deleteTransaksiConfirm(${h.rowIndex})"><i class="bi bi-trash"></i></button>
+                <button type="button" class="btn btn-outline-primary" title="Edit Transaksi" onclick="openEditModal('${item.id}', ${h.rowIndex})">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger" title="Hapus Transaksi" onclick="deleteTransaksiConfirm(${h.rowIndex})">
+                  <i class="bi bi-trash"></i>
+                </button>
               </div>
             </td>
           </tr>
@@ -503,10 +665,14 @@
     container.innerHTML = `
       <div class="detail-card">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4 class="fw-bold text-primary mb-0"><i class="bi bi-truck me-2"></i> LAPORAN KENDARAAN DINAS FUNGSIONAL (KDF)</h4>
+          <h4 class="fw-bold text-primary mb-0"><i class="bi bi-truck me-2"></i> Laporan Peminjaman Kendaraan Dinas Fungsional - TANGGAP DARURAT</h4>
           <div class="no-print">
-            <button type="button" class="btn btn-success btn-sm me-2" onclick="openAddModal('${item.id}')"><i class="bi bi-plus-circle me-1"></i> Tambah Transaksi</button>
-            <button type="button" class="btn btn-outline-dark btn-sm" onclick="window.print()"><i class="bi bi-printer me-1"></i> Cetak Kartu A4</button>
+            <button type="button" class="btn btn-success btn-sm me-2" onclick="openAddModal('${item.id}')">
+              <i class="bi bi-plus-circle me-1"></i> Tambah Transaksi Riwayat
+            </button>
+            <button type="button" class="btn btn-outline-dark btn-sm" onclick="window.print()">
+              <i class="bi bi-printer me-1"></i> Cetak Kartu Kendaraan
+            </button>
           </div>
         </div>
 
@@ -514,7 +680,7 @@
           <div class="col-md-4 text-center">
             ${item.foto 
               ? `<img src="${item.foto}" class="img-preview-lg mb-2" alt="Foto Unit">` 
-              : `<div class="p-5 bg-light rounded text-muted border"><i class="bi bi-image fs-1"></i><br>Foto Tidak Tersedia</div>`}
+              : `<div class="p-5 bg-light rounded text-muted"><i class="bi bi-image fs-1"></i><br>Foto Tidak Tersedia</div>`}
             <div class="mt-2 fw-bold text-dark fs-5">${item.nopol}</div>
           </div>
           <div class="col-md-8">
@@ -535,7 +701,7 @@
         <h5 class="fw-bold text-dark mt-4 mb-3"><i class="bi bi-clock-history me-2"></i> Riwayat Barang Keluar & Barang Masuk</h5>
 
         <div class="table-responsive">
-          <table class="table align-middle border" style="font-size: 0.82rem;">
+          <table class="table align-middle text-sm" style="font-size: 0.85rem;">
             <thead>
               <tr>
                 <th rowspan="2" class="text-center bg-dark text-white align-middle">No</th>
@@ -543,18 +709,18 @@
                 <th colspan="6" class="text-center trx-masuk-header">KDF BARANG MASUK (PENGEMBALIAN)</th>
                 <th rowspan="2" class="text-center bg-dark text-white align-middle no-print">Aksi</th>
               </tr>
-              <tr style="font-size: 0.75rem;">
+              <tr style="font-size: 0.78rem;">
                 <th class="trx-keluar-header">Tanggal</th>
                 <th class="trx-keluar-header">Petugas Serah</th>
                 <th class="trx-keluar-header">Penerima</th>
                 <th class="trx-keluar-header">No. BA / Jenis</th>
-                <th class="trx-keluar-header text-center">Foto</th>
+                <th class="trx-keluar-header text-center">Foto Kegiatan</th>
                 <th class="trx-keluar-header">Lokasi Pinjam</th>
                 <th class="trx-masuk-header">Tanggal</th>
                 <th class="trx-masuk-header">Petugas Terima</th>
                 <th class="trx-masuk-header">Petugas Serah</th>
                 <th class="trx-masuk-header">No. BA / Jenis</th>
-                <th class="trx-masuk-header text-center">Foto</th>
+                <th class="trx-masuk-header text-center">Foto Kegiatan</th>
                 <th class="trx-masuk-header">Lokasi Kembali</th>
               </tr>
             </thead>
@@ -563,6 +729,7 @@
             </tbody>
           </table>
         </div>
+
       </div>
     `;
   }
@@ -571,58 +738,88 @@
     const item = globalData.find(i => i.id === itemId);
     if (!item) return;
 
-    document.getElementById('modalTrxTitle').innerHTML = '<i class="bi bi-plus-circle me-2"></i> Tambah Transaksi Riwayat';
+    removeStrayBackdrops();
+
+    const alertBox = document.getElementById('formAlertBox');
+    if (alertBox) alertBox.style.display = 'none';
+
+    document.getElementById('modalTrxTitle').innerHTML = '<i class="bi bi-plus-circle me-2"></i> Tambah Transaksi Riwayat Baru';
     document.getElementById('trxForm').reset();
     document.getElementById('formRowIndex').value = '';
     document.getElementById('formMasterRowIndex').value = item.masterRowIndex || '';
+    document.getElementById('formItemNup').value = item.nup || '';
+    document.getElementById('formItemNopol').value = item.nopol || '';
 
-    const modal = new bootstrap.Modal(document.getElementById('modalTrxForm'));
-    modal.show();
+    const modal = getModalInstance();
+    if (modal) {
+      modal.show();
+    } else {
+      const modalEl = document.getElementById('modalTrxForm');
+      if (modalEl) {
+        modalEl.classList.add('show');
+        modalEl.style.display = 'block';
+      }
+    }
   }
 
   function openEditModal(itemId, rowIndex) {
     const item = globalData.find(i => i.id === itemId);
     if (!item) return;
-    const h = item.history.find(x => x.rowIndex === rowIndex);
-    if (!h) return;
+    const historyItem = item.history.find(h => h.rowIndex === rowIndex);
+    if (!historyItem) return;
+
+    removeStrayBackdrops();
+
+    const alertBox = document.getElementById('formAlertBox');
+    if (alertBox) alertBox.style.display = 'none';
 
     document.getElementById('modalTrxTitle').innerHTML = '<i class="bi bi-pencil-square me-2"></i> Edit Transaksi Riwayat';
     document.getElementById('formRowIndex').value = rowIndex;
     document.getElementById('formMasterRowIndex').value = item.masterRowIndex || '';
+    document.getElementById('formItemNup').value = item.nup || '';
+    document.getElementById('formItemNopol').value = item.nopol || '';
 
-    document.getElementById('formKeluarTgl').value = h.keluarTgl !== '-' ? h.keluarTgl : '';
-    document.getElementById('formKeluarPetugasSerah').value = h.keluarPetugasSerah !== '-' ? h.keluarPetugasSerah : '';
-    document.getElementById('formKeluarPetugasTerima').value = h.keluarPetugasTerima !== '-' ? h.keluarPetugasTerima : '';
-    document.getElementById('formKeluarBA').value = h.keluarBA !== '-' ? h.keluarBA : '';
-    document.getElementById('formKeluarFoto').value = h.keluarFoto || '';
-    document.getElementById('formKeluarLokasi').value = h.keluarLokasi !== '-' ? h.keluarLokasi : '';
+    document.getElementById('formKeluarTgl').value = formatDateForInput(historyItem.keluarTgl);
+    document.getElementById('formKeluarPetugasSerah').value = historyItem.keluarPetugasSerah !== '-' ? historyItem.keluarPetugasSerah : '';
+    document.getElementById('formKeluarPetugasTerima').value = historyItem.keluarPetugasTerima !== '-' ? historyItem.keluarPetugasTerima : '';
+    document.getElementById('formKeluarBA').value = historyItem.keluarBA !== '-' ? historyItem.keluarBA : '';
+    document.getElementById('formKeluarFoto').value = historyItem.keluarFotoRaw || '';
+    document.getElementById('formKeluarLokasi').value = historyItem.keluarLokasi !== '-' ? historyItem.keluarLokasi : '';
 
-    document.getElementById('formMasukTgl').value = h.masukTgl !== '-' ? h.masukTgl : '';
-    document.getElementById('formMasukPetugasTerima').value = h.masukPetugasTerima !== '-' ? h.masukPetugasTerima : '';
-    document.getElementById('formMasukPetugasSerah').value = h.masukPetugasSerah !== '-' ? h.masukPetugasSerah : '';
-    document.getElementById('formMasukBA').value = h.masukBA !== '-' ? h.masukBA : '';
-    document.getElementById('formMasukFoto').value = h.masukFoto || '';
-    document.getElementById('formMasukLokasi').value = h.masukLokasi !== '-' ? h.masukLokasi : '';
+    document.getElementById('formMasukTgl').value = formatDateForInput(historyItem.masukTgl);
+    document.getElementById('formMasukPetugasTerima').value = historyItem.masukPetugasTerima !== '-' ? historyItem.masukPetugasTerima : '';
+    document.getElementById('formMasukPetugasSerah').value = historyItem.masukPetugasSerah !== '-' ? historyItem.masukPetugasSerah : '';
+    document.getElementById('formMasukBA').value = historyItem.masukBA !== '-' ? historyItem.masukBA : '';
+    document.getElementById('formMasukFoto').value = historyItem.masukFotoRaw || '';
+    document.getElementById('formMasukLokasi').value = historyItem.masukLokasi !== '-' ? historyItem.masukLokasi : '';
 
-    const modal = new bootstrap.Modal(document.getElementById('modalTrxForm'));
-    modal.show();
-  }
-
-  function closeModalDirectly() {
-    const modalEl = document.getElementById('modalTrxForm');
-    const modalInstance = bootstrap.Modal.getInstance(modalEl);
-    if (modalInstance) modalInstance.hide();
+    const modal = getModalInstance();
+    if (modal) {
+      modal.show();
+    } else {
+      const modalEl = document.getElementById('modalTrxForm');
+      if (modalEl) {
+        modalEl.classList.add('show');
+        modalEl.style.display = 'block';
+      }
+    }
   }
 
   async function submitTrxForm() {
+    const rowIndex = document.getElementById('formRowIndex').value;
+    const masterRowIndex = document.getElementById('formMasterRowIndex').value;
+    const isEdit = rowIndex !== '';
     const btnSubmit = document.getElementById('btnSubmitForm');
-    btnSubmit.disabled = true;
-    btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
+    const alertBox = document.getElementById('formAlertBox');
+
+    if (alertBox) alertBox.style.display = 'none';
 
     const payload = {
-      action: "saveTransaction",
-      rowIndex: document.getElementById('formRowIndex').value,
-      masterRowIndex: document.getElementById('formMasterRowIndex').value,
+      action: isEdit ? 'updateTransaksi' : 'addTransaksiKeluar',
+      rowIndex: rowIndex,
+      masterRowIndex: masterRowIndex,
+      nup: document.getElementById('formItemNup').value,
+      nopol: document.getElementById('formItemNopol').value,
       keluarTgl: document.getElementById('formKeluarTgl').value,
       keluarPetugasSerah: document.getElementById('formKeluarPetugasSerah').value,
       keluarPetugasTerima: document.getElementById('formKeluarPetugasTerima').value,
@@ -637,20 +834,36 @@
       masukLokasi: document.getElementById('formMasukLokasi').value
     };
 
-    try {
-      const response = await fetch(GAS_WEB_APP_URL, {
-        method: "POST",
-        body: JSON.stringify(payload)
-      });
-      const res = await response.json();
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
 
-      if (!res.success) throw new Error(res.message || "Gagal menyimpan data.");
+    try {
+      let res;
+      try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        res = await response.json();
+      } catch (postErr) {
+        console.warn("POST failed, mencoba GET fallback...", postErr);
+        const url = `${GAS_WEB_APP_URL}?action=${payload.action}&data=${encodeURIComponent(JSON.stringify(payload))}&_t=${Date.now()}`;
+        const response = await fetch(url, { cache: 'no-store' });
+        res = await response.json();
+      }
+
+      if (!res || !res.success) throw new Error((res && res.error) || 'Gagal menyimpan data.');
 
       closeModalDirectly();
-      await fetchDatabaseData(true);
+      showToastNotice('<i class="bi bi-check-circle me-1"></i> Data Berhasil Disimpan!');
+      fetchDatabaseData(true);
 
     } catch (err) {
-      alert("Error: " + err.message);
+      if (alertBox) {
+        alertBox.style.display = 'block';
+        alertBox.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i> Gagal: ' + (err.message || err);
+      }
     } finally {
       btnSubmit.disabled = false;
       btnSubmit.innerHTML = '<i class="bi bi-save me-1"></i> Simpan Transaksi';
@@ -658,21 +871,38 @@
   }
 
   async function deleteTransaksiConfirm(rowIndex) {
-    if (!confirm("Apakah Anda yakin ingin menghapus baris riwayat ini?")) return;
+    if (!confirm("Apakah Anda yakin ingin menghapus data riwayat transaksi ini?")) return;
+
+    updateSyncBadge('bg-warning text-dark', '<i class="bi bi-trash me-1"></i> Menghapus Transaksi...');
+
+    const payload = {
+      action: 'deleteTransaksi',
+      rowIndex: rowIndex
+    };
 
     try {
-      const response = await fetch(GAS_WEB_APP_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "deleteTransaction", rowIndex: rowIndex })
-      });
-      const res = await response.json();
+      let res;
+      try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        res = await response.json();
+      } catch (postErr) {
+        console.warn("POST failed, mencoba GET fallback...", postErr);
+        const url = `${GAS_WEB_APP_URL}?action=${payload.action}&data=${encodeURIComponent(JSON.stringify(payload))}&_t=${Date.now()}`;
+        const response = await fetch(url, { cache: 'no-store' });
+        res = await response.json();
+      }
 
-      if (!res.success) throw new Error(res.message || "Gagal menghapus transaksi.");
+      if (!res || !res.success) throw new Error((res && res.error) || 'Gagal menghapus data.');
 
-      await fetchDatabaseData(true);
+      showToastNotice('<i class="bi bi-trash me-1"></i> Transaksi berhasil dihapus!');
+      fetchDatabaseData(true);
 
     } catch (err) {
-      alert("Error: " + err.message);
+      showToastNotice('<i class="bi bi-x-circle me-1"></i> Gagal hapus: ' + err.message, true);
     }
   }
 </script>
