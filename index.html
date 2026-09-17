@@ -1,0 +1,678 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+  /* ELIMINASI KOTAK DAN MARGIN TEMA BLOGGER */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow-x: hidden !important;
+    background-color: #f8fafc !important;
+  }
+
+  /* Hilangkan kotak, border, outline, dan padding bawaan elemen pembungkus Blogger */
+  .post, .post-outer, .post-body, .entry-content, .widget, .Blog, .main-inner, .column-main-inner {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+  }
+
+  /* Sembunyikan semua elemen struktur tema luar */
+  #header, #footer, .header-outer, .footer-outer, .sidebar-container, .sidebar, aside,
+  .post-header, .post-footer, .post-title, .entry-title, .comments,
+  #blog-pager, .blog-pager, .breadcrumbs, .widget-title, .feed-links,
+  .Header, .BlogArchive, .Profile, .Attribution, .navbar, #b-navbar, #navbar-iframe {
+    display: none !important;
+  }
+
+  /* ISOLATION CONTAINER: Tampilan Aplikasi Utama */
+  #silapAppContainer {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 2147483640 !important;
+    overflow-y: auto !important;
+    background-color: #f8fafc !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+  }
+
+  .nav-pills .nav-link {
+    border-radius: 8px;
+    font-weight: 600;
+    color: #64748b;
+    padding: 10px 20px;
+  }
+
+  .nav-pills .nav-link.active {
+    background-color: #1e3a8a;
+    color: white;
+  }
+
+  .table-custom {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+  }
+
+  .table-custom th {
+    background-color: #0f172a;
+    color: white;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    vertical-align: middle;
+    padding: 12px 10px;
+  }
+
+  .img-thumb {
+    width: 55px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+  }
+
+  .detail-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+  }
+
+  .img-preview-lg {
+    width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+  }
+
+  .trx-keluar-header { background-color: #fff7ed; color: #9a3412; font-weight: bold; border-bottom: 2px solid #fdba74 !important; }
+  .trx-masuk-header { background-color: #f0fdf4; color: #166534; font-weight: bold; border-bottom: 2px solid #86efac !important; }
+
+  .modal { z-index: 2147483647 !important; background: rgba(15, 23, 42, 0.6); }
+  .modal-dialog { z-index: 2147483648 !important; }
+
+  .spin-anim { animation: spin 1s linear infinite; }
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+
+  /* TAMPILAN PRINT A4 LANDSCAPE */
+  @media print {
+    @page { size: A4 landscape; margin: 8mm; }
+    html, body { background: white !important; height: auto !important; overflow: visible !important; }
+    .no-print, .btn, .input-group, select, input, #syncStatusBadge, #loadingSpinner, .nav-pills { display: none !important; }
+    #silapAppContainer { position: relative !important; width: 100% !important; height: auto !important; padding: 0 !important; overflow: visible !important; }
+    .detail-card { box-shadow: none !important; border: none !important; padding: 0 !important; }
+    table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; margin-top: 10px !important; }
+    th, td { border: 1px solid #000 !important; padding: 4px !important; color: #000 !important; }
+    .trx-keluar-header, .trx-masuk-header { background-color: #f1f5f9 !important; color: #000 !important; }
+  }
+</style>
+
+<div id="silapAppContainer">
+  <div class="container-fluid px-2">
+
+    <!-- Header Navigation -->
+    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom no-print">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-truck fs-3 text-primary"></i>
+        <div>
+          <h4 class="fw-bold mb-0 text-dark">SILAP-KDF BMN TD <small class="fs-6 text-muted fw-normal">| Management & Monitoring</small></h4>
+          <span id="syncStatusBadge" class="badge bg-secondary">Memeriksa Cache...</span>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm shadow-sm" onclick="fetchDatabaseData(true)">
+        <i class="bi bi-arrow-clockwise me-1" id="refreshIcon"></i> Refresh Data
+      </button>
+    </div>
+
+    <!-- State Loading -->
+    <div id="loadingSpinner" class="text-center py-5">
+      <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+      <p id="loadingText" class="mt-3 text-muted fw-semibold">Memuat Data dari Backend Apps Script...</p>
+      <div id="errorRetryBox" style="display: none;" class="mt-4 mx-auto text-start" style="max-width: 600px;">
+        <div class="alert alert-danger shadow-sm border-0 p-4">
+          <h5 class="fw-bold text-danger mb-2"><i class="bi bi-exclamation-octagon-fill me-2"></i>Koneksi Gagal</h5>
+          <hr>
+          <div id="errorMessage" class="mb-3 small"></div>
+          <button class="btn btn-primary btn-sm" onclick="fetchDatabaseData(true)"><i class="bi bi-arrow-repeat me-1"></i> Coba Lagi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tampilan Konten Utama -->
+    <div id="mainContent" style="display: none;">
+      <ul class="nav nav-pills mb-3 no-print" id="pills-tab" role="tablist">
+        <li class="nav-item">
+          <button class="nav-link active" id="tab-rekap-tab" data-bs-toggle="pill" data-bs-target="#tab-rekap" type="button" role="tab">
+            <i class="bi bi-table me-2"></i>Rekap Keseluruhan
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="tab-detail-tab" data-bs-toggle="pill" data-bs-target="#tab-detail" type="button" role="tab">
+            <i class="bi bi-journal-text me-2"></i>Detail Per Barang
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="pills-tabContent">
+        <!-- TAB REKAP -->
+        <div class="tab-pane fade show active" id="tab-rekap" role="tabpanel">
+          <div class="card border-0 shadow-sm p-3 mb-3 no-print">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="Cari Nopol, Nama Barang, NUP, Merk..." onkeyup="filterRekapTable()">
+              </div>
+              <div class="col-md-3">
+                <select id="filterKondisi" class="form-select" onchange="filterRekapTable()">
+                  <option value="">-- Semua Kondisi --</option>
+                  <option value="Baik">Baik</option>
+                  <option value="Rusak Ringan">Rusak Ringan (RR)</option>
+                  <option value="Rusak Berat">Rusak Berat (RB)</option>
+                </select>
+              </div>
+              <div class="col-md-3 text-end">
+                <button class="btn btn-success w-100 fw-semibold" onclick="window.print()"><i class="bi bi-printer me-1"></i> Cetak Rekap A4</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive table-custom">
+            <table class="table table-hover align-middle mb-0" id="rekapTable">
+              <thead>
+                <tr>
+                  <th class="text-center">No</th>
+                  <th class="text-center">Foto</th>
+                  <th>Nama Barang / Kendaraan</th>
+                  <th>NUP / Nopol</th>
+                  <th>Merk / Tipe</th>
+                  <th>Kondisi</th>
+                  <th>Nilai Perolehan</th>
+                  <th class="text-center">Jml Trx</th>
+                  <th class="text-center no-print">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="rekapTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB DETAIL -->
+        <div class="tab-pane fade" id="tab-detail" role="tabpanel">
+          <div class="card border-0 shadow-sm p-3 mb-3 no-print">
+            <label class="form-label fw-bold text-dark"><i class="bi bi-funnel me-1"></i> Pilih Barang / Kendaraan:</label>
+            <select id="selectBarang" class="form-select form-select-lg" onchange="renderDetailBarang(this.value)"></select>
+          </div>
+          <div id="detailContainer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Form -->
+    <div class="modal fade" id="modalTrxForm" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title fw-bold" id="modalTrxTitle"><i class="bi bi-pencil-square me-2"></i> Form Transaksi</h5>
+            <button type="button" class="btn-close btn-close-white" onclick="closeModalDirectly()"></button>
+          </div>
+          <div class="modal-body p-4">
+            <form id="trxForm">
+              <input type="hidden" id="formRowIndex" value="">
+              <input type="hidden" id="formMasterRowIndex" value="">
+
+              <div class="p-3 bg-light rounded border mb-3">
+                <h6 class="fw-bold text-danger mb-3"><i class="bi bi-box-arrow-up-right me-1"></i> DATA BARANG KELUAR (PEMINJAMAN)</h6>
+                <div class="row g-3">
+                  <div class="col-md-4"><label class="form-label small fw-semibold">Tanggal Keluar</label><input type="date" id="formKeluarTgl" class="form-control"></div>
+                  <div class="col-md-4"><label class="form-label small fw-semibold">Petugas Serah</label><input type="text" id="formKeluarPetugasSerah" class="form-control"></div>
+                  <div class="col-md-4"><label class="form-label small fw-semibold">Penerima (Peminjam)</label><input type="text" id="formKeluarPetugasTerima" class="form-control"></div>
+                  <div class="col-md-4"><label class="form-label small fw-semibold">No. BA / Jenis</label><input type="text" id="formKeluarBA" class="form-control"></div>
+                  <div class="col-md-4"><label class="form-label small fw-semibold">URL Foto Kegiatan</label><input type="text" id="formKeluarFoto" class="form-control"></div>
+                  <div class="col-md-4"><label class="form-label small fw-semibold">Lokasi Pinjam</label><input type="text" id="formKeluarLokasi" class="form-control"></div>
+                </div>
+              </div>
+
+              <div class="p-3 bg-light rounded border">
+                <h6 class="fw-bold text-success mb-3"><i class="bi bi-box-arrow-in-down-left me-1"></i> DATA BARANG MASUK (PENGEMBALIAN)</h6>
+                <div class="row g-3">
+                  <div class="col-md-4"><label class="form-label small fw-semibold">Tanggal Masuk</label><input type="date" id="formMasukTgl" class="form-control"></div>
+                  <div class="col-md-4"><label class="form-label small fw-semibold">Petugas Terima</label><input type="text" id="formMasukPetugasTerima" class="form-control"></div>
+                  <div class="col-md-4"><label class="form-label small fw-semibold">Petugas Serah</label><input type="text" id="formMasukPetugasSerah" class="form-control"></div>
+                  <div class="col-md-4"><label class="form-label small fw-semibold">No. BA / Jenis</label><input type="text" id="formMasukBA" class="form-control"></div>
+                  <div class="col-md-4"><label class="form-label small fw-semibold">URL Foto Kegiatan</label><input type="text" id="formMasukFoto" class="form-control"></div>
+                  <div class="col-md-4"><label class="form-label small fw-semibold">Lokasi Kembali</label><input type="text" id="formMasukLokasi" class="form-control"></div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="closeModalDirectly()">Batal</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="submitTrxForm()" id="btnSubmitForm"><i class="bi bi-save me-1"></i> Simpan Transaksi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxPrrD7ARUpo6GR7C16TjpVtks_GEA3f0ocY81eKSaLPVsiWHyh13B2SkoTgwpEZR7Svw/exec";
+  const CACHE_KEY = "SILAP_FRONTEND_CACHE_DATA_V3";
+  let globalData = [];
+
+  document.addEventListener("DOMContentLoaded", function() {
+    // Pindahkan aplikasi langsung ke document.body untuk melepas konteks CSS Blogger
+    const appEl = document.getElementById('silapAppContainer');
+    if (appEl) {
+      document.body.appendChild(appEl);
+    }
+    
+    // Baca Cache Lokal
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    if (cachedData) {
+      try {
+        const parsed = JSON.parse(cachedData);
+        if (parsed && parsed.length > 0) {
+          globalData = parsed;
+          renderRekapTable(globalData);
+          renderBarangSelector(globalData);
+          document.getElementById('loadingSpinner').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+          updateSyncBadge('bg-info text-dark', '<i class="bi bi-check-circle me-1"></i> Cache Aktif');
+        }
+      } catch (e) {
+        console.warn("Gagal membaca cache lokal.", e);
+      }
+    }
+    fetchDatabaseData(false);
+  });
+
+  async function fetchDatabaseData(forceRefresh = false) {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const mainContent = document.getElementById('mainContent');
+    const errorRetryBox = document.getElementById('errorRetryBox');
+    const refreshIcon = document.getElementById('refreshIcon');
+
+    if (refreshIcon) refreshIcon.classList.add('spin-anim');
+    updateSyncBadge('bg-warning text-dark', '<i class="bi bi-arrow-repeat me-1"></i> Synchronizing...');
+
+    if (globalData.length === 0) {
+      loadingSpinner.style.display = 'block';
+      mainContent.style.display = 'none';
+      errorRetryBox.style.display = 'none';
+    }
+
+    try {
+      const timestamp = new Date().getTime();
+      const url = forceRefresh 
+        ? `${GAS_WEB_APP_URL}?action=getDatabaseData&nocache=1&_t=${timestamp}` 
+        : `${GAS_WEB_APP_URL}?action=getDatabaseData&_t=${timestamp}`;
+      
+      const response = await fetch(url, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
+
+      const res = await response.json();
+      if (!res.success) throw new Error(res.error || 'Terjadi kesalahan pada server backend.');
+
+      globalData = res.items || [];
+      localStorage.setItem(CACHE_KEY, JSON.stringify(globalData));
+
+      renderRekapTable(globalData);
+      renderBarangSelector(globalData);
+
+      loadingSpinner.style.display = 'none';
+      mainContent.style.display = 'block';
+      updateSyncBadge('bg-success', '<i class="bi bi-cloud-check me-1"></i> Terhubung');
+
+    } catch (err) {
+      console.error("Fetch Error:", err);
+      if (globalData.length > 0) {
+        updateSyncBadge('bg-secondary', '<i class="bi bi-wifi-off me-1"></i> Offline Mode');
+      } else {
+        loadingSpinner.style.display = 'block';
+        mainContent.style.display = 'none';
+        errorRetryBox.style.display = 'block';
+        document.getElementById('errorMessage').innerHTML = `<code>${err.message || err}</code>`;
+        updateSyncBadge('bg-danger', '<i class="bi bi-x-circle me-1"></i> Gagal Memuat');
+      }
+    } finally {
+      if (refreshIcon) refreshIcon.classList.remove('spin-anim');
+    }
+  }
+
+  function updateSyncBadge(bgClass, htmlContent) {
+    const badge = document.getElementById('syncStatusBadge');
+    if (badge) {
+      badge.className = `badge ${bgClass}`;
+      badge.innerHTML = htmlContent;
+    }
+  }
+
+  function renderRekapTable(items) {
+    const tbody = document.getElementById('rekapTableBody');
+    tbody.innerHTML = '';
+
+    if (!items || items.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted">Data tidak ditemukan.</td></tr>';
+      return;
+    }
+
+    items.forEach((item, index) => {
+      const fotoHtml = item.foto 
+        ? `<img src="${item.foto}" class="img-thumb" alt="Foto">` 
+        : `<span class="badge bg-secondary">No Image</span>`;
+
+      let badgeKondisi = 'bg-success';
+      const kLower = (item.kondisi || '').toLowerCase();
+      if (kLower.includes('rr') || kLower.includes('rusak ringan')) badgeKondisi = 'bg-warning text-dark';
+      if (kLower.includes('rb') || kLower.includes('rusak berat')) badgeKondisi = 'bg-danger';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="text-center fw-bold">${index + 1}</td>
+        <td class="text-center">${fotoHtml}</td>
+        <td>
+          <div class="fw-bold text-primary">${item.namaBarang}</div>
+          <small class="text-muted">Kode: ${item.kodeBarang}</small>
+        </td>
+        <td>
+          <div class="fw-semibold">${item.nopol}</div>
+          <small class="text-muted">NUP: ${item.nup}</small>
+        </td>
+        <td>${item.merk} / ${item.tipe} (${item.tahun})</td>
+        <td><span class="badge ${badgeKondisi}">${item.kondisi}</span></td>
+        <td class="fw-bold text-dark">${item.nilaiPerolehanFormatted}</td>
+        <td class="text-center"><span class="badge bg-info text-dark fw-bold">${(item.history || []).length} Trx</span></td>
+        <td class="text-center no-print">
+          <button class="btn btn-sm btn-outline-primary" onclick="viewDetail('${item.id}')">
+            <i class="bi bi-eye me-1"></i> Detail
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderBarangSelector(items) {
+    const select = document.getElementById('selectBarang');
+    const prevValue = select.value;
+    select.innerHTML = '';
+
+    items.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.id;
+      opt.textContent = `${item.namaBarang} - ${item.nopol} (NUP: ${item.nup})`;
+      select.appendChild(opt);
+    });
+
+    if (items.length > 0) {
+      const activeId = items.some(i => i.id === prevValue) ? prevValue : items[0].id;
+      select.value = activeId;
+      renderDetailBarang(activeId);
+    }
+  }
+
+  function filterRekapTable() {
+    const searchVal = document.getElementById('searchInput').value.toLowerCase();
+    const kondisiVal = document.getElementById('filterKondisi').value.toLowerCase();
+
+    const filtered = globalData.filter(item => {
+      const matchesSearch = (item.namaBarang || '').toLowerCase().includes(searchVal) ||
+                            (item.nopol || '').toLowerCase().includes(searchVal) ||
+                            (item.nup || '').toLowerCase().includes(searchVal) ||
+                            (item.merk || '').toLowerCase().includes(searchVal);
+
+      const matchesKondisi = kondisiVal === '' || (item.kondisi || '').toLowerCase().includes(kondisiVal);
+
+      return matchesSearch && matchesKondisi;
+    });
+
+    renderRekapTable(filtered);
+  }
+
+  function viewDetail(itemId) {
+    document.getElementById('selectBarang').value = itemId;
+    renderDetailBarang(itemId);
+
+    const detailTabBtn = document.getElementById('tab-detail-tab');
+    if (detailTabBtn) {
+      const tab = new bootstrap.Tab(detailTabBtn);
+      tab.show();
+    }
+  }
+
+  function renderDetailBarang(itemId) {
+    const item = globalData.find(i => i.id === itemId);
+    const container = document.getElementById('detailContainer');
+
+    if (!item) {
+      container.innerHTML = '<div class="alert alert-warning">Data barang tidak ditemukan.</div>';
+      return;
+    }
+
+    let historyRows = '';
+    if (!item.history || item.history.length === 0) {
+      historyRows = '<tr><td colspan="14" class="text-center py-4 text-muted">Belum ada riwayat transaksi.</td></tr>';
+    } else {
+      item.history.forEach((h) => {
+        const imgKeluar = h.keluarFoto ? `<a href="${h.keluarFoto}" target="_blank" class="btn btn-xs btn-outline-secondary"><i class="bi bi-image"></i></a>` : '-';
+        const imgMasuk = h.masukFoto ? `<a href="${h.masukFoto}" target="_blank" class="btn btn-xs btn-outline-secondary"><i class="bi bi-image"></i></a>` : '-';
+
+        historyRows += `
+          <tr>
+            <td class="text-center fw-bold">${h.trxNo}</td>
+            <td class="fw-semibold text-nowrap">${h.keluarTgl}</td>
+            <td>${h.keluarPetugasSerah}</td>
+            <td>${h.keluarPetugasTerima}</td>
+            <td>${h.keluarBA}</td>
+            <td class="text-center">${imgKeluar}</td>
+            <td>${h.keluarLokasi}</td>
+            <td class="fw-semibold text-nowrap">${h.masukTgl}</td>
+            <td>${h.masukPetugasTerima}</td>
+            <td>${h.masukPetugasSerah}</td>
+            <td>${h.masukBA}</td>
+            <td class="text-center">${imgMasuk}</td>
+            <td>${h.masukLokasi}</td>
+            <td class="text-center no-print">
+              <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-outline-primary" onclick="openEditModal('${item.id}', ${h.rowIndex})"><i class="bi bi-pencil"></i></button>
+                <button type="button" class="btn btn-outline-danger" onclick="deleteTransaksiConfirm(${h.rowIndex})"><i class="bi bi-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    container.innerHTML = `
+      <div class="detail-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="fw-bold text-primary mb-0"><i class="bi bi-truck me-2"></i> LAPORAN KENDARAAN DINAS FUNGSIONAL (KDF)</h4>
+          <div class="no-print">
+            <button type="button" class="btn btn-success btn-sm me-2" onclick="openAddModal('${item.id}')"><i class="bi bi-plus-circle me-1"></i> Tambah Transaksi</button>
+            <button type="button" class="btn btn-outline-dark btn-sm" onclick="window.print()"><i class="bi bi-printer me-1"></i> Cetak Kartu A4</button>
+          </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-md-4 text-center">
+            ${item.foto 
+              ? `<img src="${item.foto}" class="img-preview-lg mb-2" alt="Foto Unit">` 
+              : `<div class="p-5 bg-light rounded text-muted border"><i class="bi bi-image fs-1"></i><br>Foto Tidak Tersedia</div>`}
+            <div class="mt-2 fw-bold text-dark fs-5">${item.nopol}</div>
+          </div>
+          <div class="col-md-8">
+            <table class="table table-sm table-borderless fs-6">
+              <tbody>
+                <tr><td width="30%" class="text-muted">Nama Barang</td><td width="5%">:</td><td class="fw-bold text-dark">${item.namaBarang}</td></tr>
+                <tr><td class="text-muted">Kode Satker</td><td>:</td><td>${item.kodeSatker}</td></tr>
+                <tr><td class="text-muted">Kode Barang / NUP</td><td>:</td><td>${item.kodeBarang} / <span class="badge bg-dark">${item.nup}</span></td></tr>
+                <tr><td class="text-muted">Merk / Tipe</td><td>:</td><td>${item.merk} / ${item.tipe}</td></tr>
+                <tr><td class="text-muted">Tahun / Jenis BMN</td><td>:</td><td>${item.tahun} / ${item.jenisBmn}</td></tr>
+                <tr><td class="text-muted">Kondisi Barang</td><td>:</td><td><span class="badge bg-info text-dark">${item.kondisi}</span></td></tr>
+                <tr><td class="text-muted">Nilai Perolehan</td><td>:</td><td class="fw-bold text-success fs-5">${item.nilaiPerolehanFormatted}</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <h5 class="fw-bold text-dark mt-4 mb-3"><i class="bi bi-clock-history me-2"></i> Riwayat Barang Keluar & Barang Masuk</h5>
+
+        <div class="table-responsive">
+          <table class="table align-middle border" style="font-size: 0.82rem;">
+            <thead>
+              <tr>
+                <th rowspan="2" class="text-center bg-dark text-white align-middle">No</th>
+                <th colspan="6" class="text-center trx-keluar-header">KDF BARANG KELUAR (PEMINJAMAN)</th>
+                <th colspan="6" class="text-center trx-masuk-header">KDF BARANG MASUK (PENGEMBALIAN)</th>
+                <th rowspan="2" class="text-center bg-dark text-white align-middle no-print">Aksi</th>
+              </tr>
+              <tr style="font-size: 0.75rem;">
+                <th class="trx-keluar-header">Tanggal</th>
+                <th class="trx-keluar-header">Petugas Serah</th>
+                <th class="trx-keluar-header">Penerima</th>
+                <th class="trx-keluar-header">No. BA / Jenis</th>
+                <th class="trx-keluar-header text-center">Foto</th>
+                <th class="trx-keluar-header">Lokasi Pinjam</th>
+                <th class="trx-masuk-header">Tanggal</th>
+                <th class="trx-masuk-header">Petugas Terima</th>
+                <th class="trx-masuk-header">Petugas Serah</th>
+                <th class="trx-masuk-header">No. BA / Jenis</th>
+                <th class="trx-masuk-header text-center">Foto</th>
+                <th class="trx-masuk-header">Lokasi Kembali</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${historyRows}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+
+  function openAddModal(itemId) {
+    const item = globalData.find(i => i.id === itemId);
+    if (!item) return;
+
+    document.getElementById('modalTrxTitle').innerHTML = '<i class="bi bi-plus-circle me-2"></i> Tambah Transaksi Riwayat';
+    document.getElementById('trxForm').reset();
+    document.getElementById('formRowIndex').value = '';
+    document.getElementById('formMasterRowIndex').value = item.masterRowIndex || '';
+
+    const modal = new bootstrap.Modal(document.getElementById('modalTrxForm'));
+    modal.show();
+  }
+
+  function openEditModal(itemId, rowIndex) {
+    const item = globalData.find(i => i.id === itemId);
+    if (!item) return;
+    const h = item.history.find(x => x.rowIndex === rowIndex);
+    if (!h) return;
+
+    document.getElementById('modalTrxTitle').innerHTML = '<i class="bi bi-pencil-square me-2"></i> Edit Transaksi Riwayat';
+    document.getElementById('formRowIndex').value = rowIndex;
+    document.getElementById('formMasterRowIndex').value = item.masterRowIndex || '';
+
+    document.getElementById('formKeluarTgl').value = h.keluarTgl !== '-' ? h.keluarTgl : '';
+    document.getElementById('formKeluarPetugasSerah').value = h.keluarPetugasSerah !== '-' ? h.keluarPetugasSerah : '';
+    document.getElementById('formKeluarPetugasTerima').value = h.keluarPetugasTerima !== '-' ? h.keluarPetugasTerima : '';
+    document.getElementById('formKeluarBA').value = h.keluarBA !== '-' ? h.keluarBA : '';
+    document.getElementById('formKeluarFoto').value = h.keluarFoto || '';
+    document.getElementById('formKeluarLokasi').value = h.keluarLokasi !== '-' ? h.keluarLokasi : '';
+
+    document.getElementById('formMasukTgl').value = h.masukTgl !== '-' ? h.masukTgl : '';
+    document.getElementById('formMasukPetugasTerima').value = h.masukPetugasTerima !== '-' ? h.masukPetugasTerima : '';
+    document.getElementById('formMasukPetugasSerah').value = h.masukPetugasSerah !== '-' ? h.masukPetugasSerah : '';
+    document.getElementById('formMasukBA').value = h.masukBA !== '-' ? h.masukBA : '';
+    document.getElementById('formMasukFoto').value = h.masukFoto || '';
+    document.getElementById('formMasukLokasi').value = h.masukLokasi !== '-' ? h.masukLokasi : '';
+
+    const modal = new bootstrap.Modal(document.getElementById('modalTrxForm'));
+    modal.show();
+  }
+
+  function closeModalDirectly() {
+    const modalEl = document.getElementById('modalTrxForm');
+    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+    if (modalInstance) modalInstance.hide();
+  }
+
+  async function submitTrxForm() {
+    const btnSubmit = document.getElementById('btnSubmitForm');
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
+
+    const payload = {
+      action: "saveTransaction",
+      rowIndex: document.getElementById('formRowIndex').value,
+      masterRowIndex: document.getElementById('formMasterRowIndex').value,
+      keluarTgl: document.getElementById('formKeluarTgl').value,
+      keluarPetugasSerah: document.getElementById('formKeluarPetugasSerah').value,
+      keluarPetugasTerima: document.getElementById('formKeluarPetugasTerima').value,
+      keluarBA: document.getElementById('formKeluarBA').value,
+      keluarFoto: document.getElementById('formKeluarFoto').value,
+      keluarLokasi: document.getElementById('formKeluarLokasi').value,
+      masukTgl: document.getElementById('formMasukTgl').value,
+      masukPetugasTerima: document.getElementById('formMasukPetugasTerima').value,
+      masukPetugasSerah: document.getElementById('formMasukPetugasSerah').value,
+      masukBA: document.getElementById('formMasukBA').value,
+      masukFoto: document.getElementById('formMasukFoto').value,
+      masukLokasi: document.getElementById('formMasukLokasi').value
+    };
+
+    try {
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+      const res = await response.json();
+
+      if (!res.success) throw new Error(res.message || "Gagal menyimpan data.");
+
+      closeModalDirectly();
+      await fetchDatabaseData(true);
+
+    } catch (err) {
+      alert("Error: " + err.message);
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = '<i class="bi bi-save me-1"></i> Simpan Transaksi';
+    }
+  }
+
+  async function deleteTransaksiConfirm(rowIndex) {
+    if (!confirm("Apakah Anda yakin ingin menghapus baris riwayat ini?")) return;
+
+    try {
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "deleteTransaction", rowIndex: rowIndex })
+      });
+      const res = await response.json();
+
+      if (!res.success) throw new Error(res.message || "Gagal menghapus transaksi.");
+
+      await fetchDatabaseData(true);
+
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
+  }
+</script>
