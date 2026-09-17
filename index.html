@@ -11,7 +11,7 @@
     background-color: #f8fafc !important;
   }
 
-  /* Hide Blogger elements automatically */
+  /* Sembunyikan elemen bawaan Blogger secara otomatis */
   #header, #footer, .header-outer, .footer-outer, .sidebar-container, .sidebar, aside,
   .post-header, .post-footer, .post-title, .entry-title, .comments,
   #blog-pager, .blog-pager, .breadcrumbs, .widget-title, .feed-links,
@@ -111,7 +111,7 @@
   }
 
   .modal-backdrop {
-    display: none !important; /* Hide default body backdrop to prevent click blocking */
+    display: none !important;
   }
 
   .modal-dialog {
@@ -127,7 +127,6 @@
     overflow: hidden;
   }
 
-  /* FORCED INPUT EDITABILITY & STYLING */
   .modal .form-control, .modal .form-select {
     background-color: #ffffff !important;
     color: #0f172a !important;
@@ -150,23 +149,159 @@
   }
   @keyframes spin { 100% { transform: rotate(360deg); } }
 
+  .print-header { display: none; }
+
+  /* =========================================================
+     ENGINE CETAK PROFESSIONAL MULTI-PAGE (A4 LANDSCAPE)
+     ========================================================= */
   @page {
     size: A4 landscape;
-    margin: 8mm;
+    margin: 10mm 8mm 10mm 8mm;
   }
 
   @media print {
-    .no-print, .btn, .input-group, select, input, #syncStatusBadge, #loadingSpinner { display: none !important; }
-    #silapAppContainer { position: static !important; width: 100% !important; background: #fff !important; }
-    table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; }
-    th, td { border: 1px solid #000 !important; padding: 4px !important; }
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: auto !important;
+      min-height: auto !important;
+      overflow: visible !important;
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+
+    #silapAppContainer {
+      position: static !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      width: 100% !important;
+      height: auto !important;
+      overflow: visible !important;
+      background: #ffffff !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    .no-print, 
+    .btn, 
+    .input-group, 
+    select, 
+    input, 
+    #syncStatusBadge, 
+    #loadingSpinner, 
+    .nav, 
+    .nav-pills, 
+    .modal, 
+    .modal-backdrop,
+    .btn-group { 
+      display: none !important; 
+    }
+
+    .print-header {
+      display: block !important;
+      text-align: center;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 6px;
+    }
+
+    .print-header h5 {
+      margin: 0;
+      font-weight: bold;
+      font-size: 13pt;
+      color: #000;
+      text-transform: uppercase;
+    }
+
+    .print-header p {
+      margin: 3px 0 0 0;
+      font-size: 8.5pt;
+      color: #222;
+    }
+
+    .detail-card, .card {
+      box-shadow: none !important;
+      border: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      background: transparent !important;
+    }
+
+    .table-responsive, .table-custom {
+      overflow: visible !important;
+      box-shadow: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+    }
+
+    table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      font-size: 8pt !important;
+      page-break-inside: auto !important;
+    }
+
+    thead {
+      display: table-header-group !important;
+    }
+
+    tbody {
+      display: table-row-group !important;
+    }
+
+    tr {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+
+    th, td {
+      border: 1px solid #000000 !important;
+      padding: 4px 6px !important;
+      color: #000000 !important;
+      vertical-align: middle !important;
+    }
+
+    th {
+      background-color: #f1f5f9 !important;
+      color: #000000 !important;
+      font-weight: bold !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .badge {
+      border: none !important;
+      color: #000000 !important;
+      padding: 0 !important;
+      font-size: 8pt !important;
+      background: transparent !important;
+    }
+
+    .img-thumb {
+      width: 42px !important;
+      height: 30px !important;
+    }
+
+    .img-preview-lg {
+      max-height: 110px !important;
+      width: auto !important;
+    }
   }
 </style>
 
 <div id="silapAppContainer">
   <div class="container-fluid px-4">
 
-    <!-- Header Navigation Bar -->
+    <!-- Kop Cetak Resmi -->
+    <div class="print-header">
+      <h5>LAPORAN MONITORING & RIWAYAT KENDARAAN DINAS FUNGSIONAL (SILAP-KDF)</h5>
+      <p>Sistem Informasi Pengelolaan Aset BMN Tanggap Darurat</p>
+    </div>
+
+    <!-- Header App Bar -->
     <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom no-print">
       <div class="d-flex align-items-center gap-2">
         <i class="bi bi-truck fs-3 text-primary"></i>
@@ -260,7 +395,7 @@
                 </tr>
               </thead>
               <tbody id="rekapTableBody">
-                <!-- Dynamic Content -->
+                <!-- Dynamic Rows -->
               </tbody>
             </table>
           </div>
@@ -271,7 +406,7 @@
           <div class="card border-0 shadow-sm p-3 mb-4 no-print">
             <label class="form-label fw-bold text-dark"><i class="bi bi-funnel me-1"></i> Pilih Barang / Kendaraan:</label>
             <select id="selectBarang" class="form-select form-select-lg" onchange="renderDetailBarang(this.value)">
-              <!-- Dynamic Content -->
+              <!-- Dynamic Options -->
             </select>
           </div>
 
@@ -381,8 +516,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  // Ganti URL di bawah dengan Web App URL hasil Deploy Google Apps Script Anda (wajib /exec)
-  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyIBjFyL0FUww-DKTlUwTylndRMC6Jsx4SVwBWpmCzat9dqLWmu8sheqTaDL3LTvbJwXA/exec";
+  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxYNbfsDgVBZx1CvbNZkzNdNNq_NY8vHvfwIfgmVTKs0tWI4SYeFy1yyj2gpWtC2CBr9A/exec";
   const CACHE_KEY = "SILAP_FRONTEND_CACHE_DATA";
 
   let globalData = [];
@@ -639,13 +773,13 @@
             <td>${h.keluarPetugasSerah}</td>
             <td>${h.keluarPetugasTerima}</td>
             <td>${h.keluarBA}</td>
-            <td class="text-center">${imgKeluar}</td>
+            <td class="text-center no-print">${imgKeluar}</td>
             <td>${h.keluarLokasi}</td>
             <td class="fw-semibold text-nowrap">${h.masukTgl}</td>
             <td>${h.masukPetugasTerima}</td>
             <td>${h.masukPetugasSerah}</td>
             <td>${h.masukBA}</td>
-            <td class="text-center">${imgMasuk}</td>
+            <td class="text-center no-print">${imgMasuk}</td>
             <td>${h.masukLokasi}</td>
             <td class="text-center no-print">
               <div class="btn-group btn-group-sm">
@@ -714,13 +848,13 @@
                 <th class="trx-keluar-header">Petugas Serah</th>
                 <th class="trx-keluar-header">Penerima</th>
                 <th class="trx-keluar-header">No. BA / Jenis</th>
-                <th class="trx-keluar-header text-center">Foto Kegiatan</th>
+                <th class="trx-keluar-header text-center no-print">Foto Kegiatan</th>
                 <th class="trx-keluar-header">Lokasi Pinjam</th>
                 <th class="trx-masuk-header">Tanggal</th>
                 <th class="trx-masuk-header">Petugas Terima</th>
                 <th class="trx-masuk-header">Petugas Serah</th>
                 <th class="trx-masuk-header">No. BA / Jenis</th>
-                <th class="trx-masuk-header text-center">Foto Kegiatan</th>
+                <th class="trx-masuk-header text-center no-print">Foto Kegiatan</th>
                 <th class="trx-masuk-header">Lokasi Kembali</th>
               </tr>
             </thead>
@@ -780,18 +914,18 @@
     document.getElementById('formItemNopol').value = item.nopol || '';
 
     document.getElementById('formKeluarTgl').value = formatDateForInput(historyItem.keluarTgl);
-    document.getElementById('formKeluarPetugasSerah').value = historyItem.keluarPetugasSerah !== '-' ? historyItem.keluarPetugasSerah : '';
-    document.getElementById('formKeluarPetugasTerima').value = historyItem.keluarPetugasTerima !== '-' ? historyItem.keluarPetugasTerima : '';
-    document.getElementById('formKeluarBA').value = historyItem.keluarBA !== '-' ? historyItem.keluarBA : '';
-    document.getElementById('formKeluarFoto').value = historyItem.keluarFotoRaw || '';
-    document.getElementById('formKeluarLokasi').value = historyItem.keluarLokasi !== '-' ? historyItem.keluarLokasi : '';
+    document.getElementById('formKeluarPetugasSerah').value = historyItem.keluarPetugasSerah || '';
+    document.getElementById('formKeluarPetugasTerima').value = historyItem.keluarPetugasTerima || '';
+    document.getElementById('formKeluarBA').value = historyItem.keluarBA || '';
+    document.getElementById('formKeluarFoto').value = historyItem.keluarFoto || '';
+    document.getElementById('formKeluarLokasi').value = historyItem.keluarLokasi || '';
 
     document.getElementById('formMasukTgl').value = formatDateForInput(historyItem.masukTgl);
-    document.getElementById('formMasukPetugasTerima').value = historyItem.masukPetugasTerima !== '-' ? historyItem.masukPetugasTerima : '';
-    document.getElementById('formMasukPetugasSerah').value = historyItem.masukPetugasSerah !== '-' ? historyItem.masukPetugasSerah : '';
-    document.getElementById('formMasukBA').value = historyItem.masukBA !== '-' ? historyItem.masukBA : '';
-    document.getElementById('formMasukFoto').value = historyItem.masukFotoRaw || '';
-    document.getElementById('formMasukLokasi').value = historyItem.masukLokasi !== '-' ? historyItem.masukLokasi : '';
+    document.getElementById('formMasukPetugasTerima').value = historyItem.masukPetugasTerima || '';
+    document.getElementById('formMasukPetugasSerah').value = historyItem.masukPetugasSerah || '';
+    document.getElementById('formMasukBA').value = historyItem.masukBA || '';
+    document.getElementById('formMasukFoto').value = historyItem.masukFoto || '';
+    document.getElementById('formMasukLokasi').value = historyItem.masukLokasi || '';
 
     const modal = getModalInstance();
     if (modal) {
@@ -806,18 +940,14 @@
   }
 
   async function submitTrxForm() {
-    const rowIndex = document.getElementById('formRowIndex').value;
-    const masterRowIndex = document.getElementById('formMasterRowIndex').value;
-    const isEdit = rowIndex !== '';
     const btnSubmit = document.getElementById('btnSubmitForm');
     const alertBox = document.getElementById('formAlertBox');
-
-    if (alertBox) alertBox.style.display = 'none';
+    alertBox.style.display = 'none';
 
     const payload = {
-      action: isEdit ? 'updateTransaksi' : 'addTransaksiKeluar',
-      rowIndex: rowIndex,
-      masterRowIndex: masterRowIndex,
+      action: 'saveTransaksi',
+      rowIndex: document.getElementById('formRowIndex').value,
+      masterRowIndex: document.getElementById('formMasterRowIndex').value,
       nup: document.getElementById('formItemNup').value,
       nopol: document.getElementById('formItemNopol').value,
       keluarTgl: document.getElementById('formKeluarTgl').value,
@@ -838,32 +968,22 @@
     btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
 
     try {
-      let res;
-      try {
-        const response = await fetch(GAS_WEB_APP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-        res = await response.json();
-      } catch (postErr) {
-        console.warn("POST failed, mencoba GET fallback...", postErr);
-        const url = `${GAS_WEB_APP_URL}?action=${payload.action}&data=${encodeURIComponent(JSON.stringify(payload))}&_t=${Date.now()}`;
-        const response = await fetch(url, { cache: 'no-store' });
-        res = await response.json();
-      }
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
 
-      if (!res || !res.success) throw new Error((res && res.error) || 'Gagal menyimpan data.');
+      const res = await response.json();
+      if (!res.success) throw new Error(res.error || 'Gagal menyimpan transaksi.');
 
       closeModalDirectly();
-      showToastNotice('<i class="bi bi-check-circle me-1"></i> Data Berhasil Disimpan!');
-      fetchDatabaseData(true);
+      showToastNotice('<i class="bi bi-check-circle me-1"></i> Transaksi berhasil disimpan!');
+      await fetchDatabaseData(true);
 
     } catch (err) {
-      if (alertBox) {
-        alertBox.style.display = 'block';
-        alertBox.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i> Gagal: ' + (err.message || err);
-      }
+      alertBox.style.display = 'block';
+      alertBox.innerHTML = `<strong>Error:</strong> ${err.message || err}`;
     } finally {
       btnSubmit.disabled = false;
       btnSubmit.innerHTML = '<i class="bi bi-save me-1"></i> Simpan Transaksi';
@@ -871,38 +991,31 @@
   }
 
   async function deleteTransaksiConfirm(rowIndex) {
-    if (!confirm("Apakah Anda yakin ingin menghapus data riwayat transaksi ini?")) return;
+    if (!confirm('Apakah Anda yakin ingin menghapus baris transaksi riwayat ini?')) return;
 
     updateSyncBadge('bg-warning text-dark', '<i class="bi bi-trash me-1"></i> Menghapus Transaksi...');
 
-    const payload = {
-      action: 'deleteTransaksi',
-      rowIndex: rowIndex
-    };
-
     try {
-      let res;
-      try {
-        const response = await fetch(GAS_WEB_APP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-        res = await response.json();
-      } catch (postErr) {
-        console.warn("POST failed, mencoba GET fallback...", postErr);
-        const url = `${GAS_WEB_APP_URL}?action=${payload.action}&data=${encodeURIComponent(JSON.stringify(payload))}&_t=${Date.now()}`;
-        const response = await fetch(url, { cache: 'no-store' });
-        res = await response.json();
-      }
+      const payload = {
+        action: 'deleteTransaksi',
+        rowIndex: rowIndex
+      };
 
-      if (!res || !res.success) throw new Error((res && res.error) || 'Gagal menghapus data.');
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
 
-      showToastNotice('<i class="bi bi-trash me-1"></i> Transaksi berhasil dihapus!');
-      fetchDatabaseData(true);
+      const res = await response.json();
+      if (!res.success) throw new Error(res.error || 'Gagal menghapus transaksi.');
+
+      showToastNotice('<i class="bi bi-check-circle me-1"></i> Transaksi berhasil dihapus!');
+      await fetchDatabaseData(true);
 
     } catch (err) {
-      showToastNotice('<i class="bi bi-x-circle me-1"></i> Gagal hapus: ' + err.message, true);
+      alert('Gagal menghapus transaksi: ' + (err.message || err));
+      updateSyncBadge('bg-danger', '<i class="bi bi-x-circle me-1"></i> Gagal Hapus');
     }
   }
 </script>
